@@ -1,11 +1,13 @@
 import { PageTransition } from '../components/PageTransition';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Background } from '../components/Background';
 
 export const Home = () => {
   return (
     <PageTransition>
-      <div className="flex flex-col justify-center min-h-[60vh] max-w-2xl">
+      <Background />
+      <div className="flex flex-col justify-center min-h-[40vh] max-w-l relative z-10">
         <div className="mb-10">
           <img 
             src="/assets/profile/profile.png" 
@@ -17,11 +19,11 @@ export const Home = () => {
           />
         </div>
 
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif text-stone-900 mb-8 leading-tight">
+        <h1 className="!leading-[1.2] text-5xl md:text-5xl lg:text-5xl font-serif text-stone-900 mb-8">
           Building <span className="italic text-stone-600">elegant solutions</span> to complex problems.
         </h1>
         
-        <div className="text-lg text-stone-600 mb-12 leading-relaxed max-w-2xl">
+        <div className="text-lg text-stone-600 mb-12 leading-loose max-w-2xl">
           Accomplished Product Leader and award-winning EdTech entrepreneur
           <span className="mx-3 text-stone-400">•</span>
           AI native with full stack product building experience
