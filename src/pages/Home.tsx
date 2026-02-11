@@ -6,14 +6,31 @@ export const Home = () => {
   return (
     <PageTransition>
       <div className="flex flex-col justify-center min-h-[60vh] max-w-2xl">
+        <div className="mb-10">
+          <img 
+            src="/assets/profile/profile.png" 
+            alt="Arvind Murali" 
+            className="w-48 h-48 md:w-64 md:h-64 object-cover"
+            style={{
+              borderRadius: "40% 30% 60% 40% / 40% 40% 60% 50%"
+            }}
+          />
+        </div>
+
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif text-stone-900 mb-8 leading-tight">
-          Building calm, intelligent <span className="italic text-stone-500">software</span> for education & mobility.
+          Building <span className="italic text-stone-600">elegant solutions</span> to complex problems.
         </h1>
         
-        <p className="text-lg text-stone-600 mb-12 leading-relaxed max-w-xl">
-          I’m Arvind. A Product Leader and Engineer specialized in 0-to-1 experiences.
-          I build platforms that feel quiet but do powerful things.
-        </p>
+        <div className="text-lg text-stone-600 mb-12 leading-relaxed max-w-2xl">
+          Accomplished Product Leader and award-winning EdTech entrepreneur
+          <span className="mx-3 text-stone-400">•</span>
+          AI native with full stack product building experience
+          <span className="mx-3 text-stone-400">•</span>
+          Thrive 0 &rarr; 1
+          <span className="mx-3 text-stone-400">•</span>
+          Strong passion for education & building pedagogically sound solutions
+          
+        </div>
 
         <div className="flex flex-col sm:flex-row gap-6">
           <Link to="/projects" className="group flex items-center gap-2 text-stone-900 font-medium border-b border-stone-300 pb-1 hover:border-stone-900 transition-all w-fit">

@@ -22,9 +22,14 @@ export const ProjectCard = ({ project, index }: ProjectCardProps) => {
       >
         <div className="bg-white p-6 rounded-lg border border-stone-200 shadow-sm hover:shadow-md transition-all h-full flex flex-col">
           <div className="flex justify-between items-start mb-4">
-            <h3 className="text-xl font-serif text-stone-900 group-hover:text-stone-600 transition-colors">
-              {project.title}
-            </h3>
+            <div className="flex items-center gap-3">
+              {project.logoUrl && (
+                <img src={project.logoUrl} alt={`${project.title} logo`} className="w-8 h-8 object-contain rounded-md" />
+              )}
+              <h3 className="text-xl font-serif text-stone-900 group-hover:text-stone-600 transition-colors">
+                {project.title}
+              </h3>
+            </div>
             <ArrowUpRight size={18} className="text-stone-400 group-hover:text-stone-900 transition-colors" />
           </div>
         

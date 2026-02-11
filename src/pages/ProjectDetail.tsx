@@ -21,9 +21,15 @@ export const ProjectDetail = () => {
         </Link>
         
         <header className="mb-10">
-          <h1 className="text-4xl md:text-5xl font-serif text-stone-900 mb-6 leading-tight">
-            {project.title}
-          </h1>
+          <div className="flex items-center gap-4 mb-6">
+            {project.logoUrl && (
+              <img src={project.logoUrl} alt={`${project.title} logo`} className="w-12 h-12 md:w-16 md:h-16 object-contain" />
+            )}
+            <h1 className="text-4xl md:text-5xl font-serif text-stone-900 leading-tight">
+              {project.title}
+            </h1>
+          </div>
+
           <div className="flex flex-wrap gap-3 mb-8">
             {project.role && (
               <span className="bg-stone-100 text-stone-600 px-3 py-1 rounded text-sm font-medium">
@@ -37,14 +43,22 @@ export const ProjectDetail = () => {
             ))}
           </div>
           
-          <a 
-            href={project.url} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="inline-flex items-center text-lg font-medium text-stone-900 border-b border-stone-800 hover:text-stone-600 hover:border-stone-400 transition-all pb-1"
-          >
-            Visit Live Site <ArrowUpRight size={18} className="ml-2" />
-          </a>
+          <div className="flex gap-4 mb-12">
+            <a 
+              href={project.url} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-stone-900 text-white px-6 py-3 rounded-lg hover:bg-stone-800 transition-colors"
+            >
+              Visit Website <ArrowUpRight size={18} />
+            </a>
+            <Link 
+              to="/projects"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-stone-200 hover:bg-stone-50 text-stone-600 transition-colors"
+            >
+              Back to Projects
+            </Link>
+          </div>
         </header>
 
         <section className="space-y-12">
@@ -88,6 +102,23 @@ export const ProjectDetail = () => {
                 ))}
               </ul>
             </div>
+          )}
+
+          {project.coverUrl && (
+             <div className="w-full aspect-video rounded-xl overflow-hidden mt-16 border border-stone-200 bg-stone-50 shadow-sm">
+               {project.coverUrl.endsWith('.mp4') ? (
+                 <video 
+                   src={project.coverUrl} 
+                   className="w-full h-full object-cover" 
+                   autoPlay 
+                   muted 
+                   loop 
+                   playsInline 
+                 />
+               ) : (
+                 <img src={project.coverUrl} alt={`${project.title} cover`} className="w-full h-full object-cover" />
+               )}
+             </div>
           )}
         </section>
       </div>

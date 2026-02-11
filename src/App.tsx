@@ -8,6 +8,8 @@ import { Misc } from './pages/Misc';
 
 import { ProjectDetail } from './pages/ProjectDetail';
 
+import ScrollToTop from './components/ScrollToTop';
+
 function AnimatedRoutes() {
   const location = useLocation();
   
@@ -28,6 +30,7 @@ function AnimatedRoutes() {
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <Layout>
         <AnimatedRoutes />
       </Layout>
