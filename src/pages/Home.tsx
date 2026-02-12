@@ -9,8 +9,8 @@ export const Home = () => {
     <PageTransition>
       <Background />
       <StoneStacker />
-      <div className="flex flex-col justify-center min-h-[40vh] max-w-4xl relative z-10">
-        <div className="mb-10 flex justify-center md:justify-start">
+      <div className="flex flex-col items-center justify-center min-h-[40vh] max-w-4xl mx-auto relative z-10 text-center">
+        <div className="mb-10">
           <img 
             src={`${import.meta.env.BASE_URL}assets/profile/profile.png`}
             alt="Arvind Murali" 
@@ -25,18 +25,19 @@ export const Home = () => {
           Building <span className="italic text-stone-600">elegant </span>solutions to <span className="italic text-stone-600">complex </span> problems.
         </h1>
         
-        <div className="text-lg text-stone-600 mb-12 leading-loose max-w-2xl">
+        <div className="text-lg text-stone-600 mb-12 leading-loose max-w-3xl">
           Accomplished Product Leader and award-winning EdTech entrepreneur
-          <span className="mx-3 text-stone-400">•</span>
-          AI native with full stack product building experience
-          <span className="mx-3 text-stone-400">•</span>
-          Thrive 0 &rarr; 1
-          <span className="mx-3 text-stone-400">•</span>
-          Strong passion for education & building pedagogically sound solutions
-          
+          <div className="flex flex-wrap justify-center items-center gap-x-3 mt-2">
+            <span className="text-stone-400 md:inline hidden">•</span>
+            <span>AI native with full stack product building experience</span>
+            <span className="text-stone-400">•</span>
+            <span>Thrive 0 &rarr; 1</span>
+            <span className="text-stone-400">•</span>
+            <span>Strong passion for education & building pedagogically sound solutions</span>
+          </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-6">
+        <div className="flex flex-col sm:flex-row gap-6 justify-center">
           <Link to="/projects" className="group flex items-center gap-2 text-stone-900 font-medium border-b border-stone-300 pb-1 hover:border-stone-900 transition-all w-fit">
             View Projects 
             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
