@@ -75,7 +75,7 @@ const generateStone = (isFoundation = false): Stone => {
 
 export const StoneStacker = () => {
   const [stacks, setStacks] = useState<Stack[]>([]);
-  const [activeStone, setActiveStone] = useState<Stone | null>(generateStone(true));
+  const [stagingStones, setStagingStones] = useState<Stone[]>([generateStone(true), generateStone(false)]);
   const [dragKey, setDragKey] = useState(0);
   const [draggedFromStack, setDraggedFromStack] = useState<{stackIdx: number, stone: Stone} | null>(null);
 
@@ -92,7 +92,7 @@ export const StoneStacker = () => {
     const STAGING_HEIGHT = 100;
     const isInStagingZone = dropX > window.innerWidth - STAGING_WIDTH && dropY > window.innerHeight - STAGING_HEIGHT;
 
-    const currentStone = draggedFromStack ? draggedFromStack.stone : activeStone;
+    const currentStone = draggedFromStack ? draggedFromStack.stone : stagingStones.find(s => s.id === info.target?.id) || stagingStones[stagingStones.length - 1];
 
     if (!currentStone) {
       setDragKey(prev => prev + 1);
@@ -244,7 +244,10 @@ export const StoneStacker = () => {
             : s
         );
       } else {
-        setActiveStone(isBottomFull ? null : generateStone(false));
+        setStagingStones(prev => {
+          const filtered = prev.filter(s => s.id !== currentStone.id);
+          return isBottomFull ? filtered : [...filtered, generateStone(false)];
+        });
       }
 
       return newStacks.filter(s => s.stones.length > 0);
@@ -316,30 +319,37 @@ export const StoneStacker = () => {
         </div>
       ))}
 
-      {/* Active Stone (Staging) */}
+      {/* Staging Stones */}
       <AnimatePresence>
-        {activeStone && !draggedFromStack && (
-          <div className="absolute bottom-0 right-8 pointer-events-auto">
+        {!draggedFromStack && stagingStones.map((stone, index) => (
+          <div 
+            key={`${stone.id}-${dragKey}`}
+            className="absolute bottom-0 right-8 pointer-events-auto"
+            style={{ 
+              zIndex: 200 - index,
+              // Stagger stones horizontally so both are visible
+              transform: `translateX(${-index * 20}px)` 
+            }}
+          >
             <motion.div
               drag
-              key={`${activeStone.id}-${dragKey}`}
               dragMomentum={false}
               onDragEnd={handleDragEnd}
-              whileDrag={{ scale: 1.1, zIndex: 200 }}
+              whileDrag={{ scale: 1.1, zIndex: 300 }}
               style={{
-                width: activeStone.width,
-                height: activeStone.height,
-                backgroundColor: activeStone.color,
-                borderRadius: activeStone.borderRadius,
+                width: stone.width,
+                height: stone.height,
+                backgroundColor: stone.color,
+                borderRadius: stone.borderRadius,
                 cursor: 'grab',
               }}
               className="shadow-[0_1px_2px_rgba(0,0,0,0.3),0_4px_8px_rgba(0,0,0,0.1)] border border-stone-700/15"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0 }}
             />
           </div>
-        )}
+        ))}
       </AnimatePresence>
 
 
