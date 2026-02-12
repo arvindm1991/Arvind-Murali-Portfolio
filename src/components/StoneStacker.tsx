@@ -25,6 +25,7 @@ const COLORS = [
 ];
 
 interface Stack {
+  id: string;
   x: number;
   stones: Stone[];
 }
@@ -76,8 +77,7 @@ const generateStone = (isFoundation = false): Stone => {
 export const StoneStacker = () => {
   const [stacks, setStacks] = useState<Stack[]>([]);
   const [stagingStones, setStagingStones] = useState<Stone[]>([generateStone(true), generateStone(false)]);
-  const [dragKey, setDragKey] = useState(0);
-  const [draggedFromStack, setDraggedFromStack] = useState<{stackIdx: number, stone: Stone} | null>(null);
+  const [draggedFromStack, setDraggedFromStack] = useState<{stackId: string, stone: Stone} | null>(null);
 
   // Check if screen is full of stacks
   const isBottomFull = stacks.length > 0 && 
@@ -95,13 +95,11 @@ export const StoneStacker = () => {
     const currentStone = draggedFromStack ? draggedFromStack.stone : stagingStones.find(s => s.id === info.target?.id) || stagingStones[stagingStones.length - 1];
 
     if (!currentStone) {
-      setDragKey(prev => prev + 1);
       setDraggedFromStack(null);
       return;
     }
 
     const resetDrag = () => {
-      setDragKey(prev => prev + 1);
       setDraggedFromStack(null);
     };
 
@@ -205,41 +203,55 @@ export const StoneStacker = () => {
         return { y, rotate };
       };
 
-      const placeStoneInStack = (stackIdx: number, stone: Stone, x: number) => {
-        const stack = { ...newStacks[stackIdx] };
+      const placeStoneInStack = (targetStackIdOrIdx: string | number, stone: Stone, x: number) => {
+        const stack = { ...newStacks.find(s => s.id === (typeof targetStackIdOrIdx === 'string' ? targetStackIdOrIdx : newStacks[targetStackIdOrIdx].id))! };
         const relX = x - stack.x;
         const { y, rotate } = calculateSettledState(stack, stone, relX);
         const MAX_HEIGHT = window.innerHeight * 0.35;
 
         if (y + stone.height > MAX_HEIGHT) {
           // Overflow to next stack
-          const nextStackIdx = stackIdx + 1;
+          const nextStackIdx = typeof targetStackIdOrIdx === 'number' 
+            ? targetStackIdOrIdx + 1 
+            : newStacks.findIndex(s => s.id === targetStackIdOrIdx) + 1;
+
           if (nextStackIdx < newStacks.length) {
             placeStoneInStack(nextStackIdx, stone, newStacks[nextStackIdx].x);
           } else {
             // Create new stack for overflow
             const newX = stack.x + 100;
-            newStacks.push({ x: newX, stones: [] });
+            newStacks.push({ 
+              id: Math.random().toString(36).substr(2, 9),
+              x: newX, 
+              stones: [] 
+            });
             placeStoneInStack(newStacks.length - 1, stone, newX);
           }
           return;
         }
 
         stack.stones = [...stack.stones, { ...stone, relX, y, rotate }];
-        newStacks[stackIdx] = stack;
+        const currentStackIdx = typeof targetStackIdOrIdx === 'number'
+          ? targetStackIdOrIdx
+          : newStacks.findIndex(s => s.id === targetStackIdOrIdx);
+        newStacks[currentStackIdx] = stack;
       };
 
       if (targetStackIndex !== -1) {
         placeStoneInStack(targetStackIndex, currentStone, dropX);
       } else {
         // No stack nearby, start new one
-        newStacks.push({ x: dropX, stones: [{ ...currentStone, relX: 0, y: 0 }] });
+        newStacks.push({ 
+          id: Math.random().toString(36).substr(2, 9),
+          x: dropX, 
+          stones: [{ ...currentStone, relX: 0, y: 0 }] 
+        });
       }
 
       // Final cleanup: Remove from source and generate new stone
       if (draggedFromStack) {
-        newStacks = newStacks.map((s, i) => 
-          i === draggedFromStack.stackIdx 
+        newStacks = newStacks.map((s) => 
+          s.id === draggedFromStack.stackId 
             ? { ...s, stones: s.stones.filter(st => st.id !== currentStone.id) }
             : s
         );
@@ -253,16 +265,15 @@ export const StoneStacker = () => {
       return newStacks.filter(s => s.stones.length > 0);
     });
 
-    setDragKey(prev => prev + 1);
     setDraggedFromStack(null);
   };
 
   return (
     <div className="fixed inset-0 pointer-events-none z-[100] overflow-hidden">
       {/* Stacks Display */}
-      {stacks.map((stack, sIdx) => (
+      {stacks.map((stack) => (
         <div 
-          key={sIdx} 
+          key={stack.id} 
           className="absolute bottom-0"
           style={{ left: stack.x, transform: 'translateX(-50%)' }}
         >
@@ -284,7 +295,7 @@ export const StoneStacker = () => {
                 key={stone.id}
                 drag={isDraggable}
                 dragMomentum={false}
-                onDragStart={() => isDraggable && setDraggedFromStack({ stackIdx: sIdx, stone })}
+                onDragStart={() => isDraggable && setDraggedFromStack({ stackId: stack.id, stone })}
                 onDragEnd={handleDragEnd}
                 // No layoutId — prevents center-flash on new stone spawn
                 initial={false}
@@ -324,7 +335,7 @@ export const StoneStacker = () => {
         <AnimatePresence>
           {!draggedFromStack && stagingStones.map((stone, index) => (
             <div 
-              key={`${stone.id}-${dragKey}`}
+              key={stone.id}
               className="relative"
               style={{ zIndex: 200 - index }}
             >
