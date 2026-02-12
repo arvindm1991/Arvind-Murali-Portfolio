@@ -76,7 +76,7 @@ const generateStone = (isFoundation = false): Stone => {
 
 export const StoneStacker = () => {
   const [stacks, setStacks] = useState<Stack[]>([]);
-  const [stagingStones, setStagingStones] = useState<Stone[]>([generateStone(true), generateStone(false)]);
+  const [activeStone, setActiveStone] = useState<Stone | null>(generateStone(true));
   const [draggedFromStack, setDraggedFromStack] = useState<{stackId: string, stone: Stone} | null>(null);
 
   // Check if screen is full of stacks
@@ -91,10 +91,8 @@ export const StoneStacker = () => {
     const STAGING_WIDTH = 150;
     const STAGING_HEIGHT = 100;
     const isInStagingZone = dropX > window.innerWidth - STAGING_WIDTH && dropY > window.innerHeight - STAGING_HEIGHT;
-    
-    // Find which stone was dragged from staging by matching the target ID if possible, 
-    // otherwise fallback to the most recent staging stone (last entry).
-    const currentStone = draggedFromStack ? draggedFromStack.stone : stagingStones.find(s => s.id === info.target?.id) || stagingStones[stagingStones.length - 1];
+
+    const currentStone = draggedFromStack ? draggedFromStack.stone : activeStone;
 
     if (!currentStone) {
       setDraggedFromStack(null);
@@ -258,10 +256,7 @@ export const StoneStacker = () => {
             : s
         );
       } else {
-        setStagingStones(prev => {
-          const filtered = prev.filter(s => s.id !== currentStone.id);
-          return isBottomFull ? filtered : [...filtered, generateStone(false)];
-        });
+        setActiveStone(isBottomFull ? null : generateStone(false));
       }
 
       return newStacks.filter(s => s.stones.length > 0);
@@ -332,36 +327,31 @@ export const StoneStacker = () => {
         </div>
       ))}
 
-      {/* Staging Stones */}
-      <div className="absolute bottom-0 right-8 pointer-events-auto flex items-end gap-6 h-32">
-        <AnimatePresence>
-          {!draggedFromStack && stagingStones.map((stone, index) => (
-            <div 
-              key={stone.id}
-              className="relative"
-              style={{ zIndex: 200 - index }}
-            >
-              <motion.div
-                drag
-                dragMomentum={false}
-                onDragEnd={handleDragEnd}
-                whileDrag={{ scale: 1.1, zIndex: 400 }}
-                style={{
-                  width: stone.width,
-                  height: stone.height,
-                  backgroundColor: stone.color,
-                  borderRadius: stone.borderRadius,
-                  cursor: 'grab',
-                }}
-                className="shadow-[0_1px_2px_rgba(0,0,0,0.3),0_4px_8px_rgba(0,0,0,0.1)] border border-stone-700/15"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0 }}
-              />
-            </div>
-          ))}
-        </AnimatePresence>
-      </div>
+      {/* Active Stone (Staging) */}
+      <AnimatePresence>
+        {activeStone && !draggedFromStack && (
+          <div className="absolute bottom-0 right-8 pointer-events-auto">
+            <motion.div
+              drag
+              key={activeStone.id}
+              dragMomentum={false}
+              onDragEnd={handleDragEnd}
+              whileDrag={{ scale: 1.1, zIndex: 300 }}
+              style={{
+                width: activeStone.width,
+                height: activeStone.height,
+                backgroundColor: activeStone.color,
+                borderRadius: activeStone.borderRadius,
+                cursor: 'grab',
+              }}
+              className="shadow-[0_1px_2px_rgba(0,0,0,0.3),0_4px_8px_rgba(0,0,0,0.1)] border border-stone-700/15"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
+            />
+          </div>
+        )}
+      </AnimatePresence>
 
 
     </div>
