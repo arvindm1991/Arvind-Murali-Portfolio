@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, FileText, Briefcase, Menu, X, Settings, ChevronDown, ChevronRight } from 'lucide-react';
+import { Home, FileText, Briefcase, Menu, X, Car, ChevronDown, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import clsx from 'clsx';
@@ -9,7 +9,7 @@ const navItems = [
   { path: '/', label: 'Home', icon: Home },
   { path: '/resume', label: 'Resume', icon: FileText },
   { path: '/projects', label: 'Projects', icon: Briefcase, hasSubmenu: true },
-  { path: '/misc', label: 'Misc Work', icon: Settings },
+  { path: '/misc', label: 'Misc Work', icon: Car },
 ];
 
 export const Sidebar = () => {
