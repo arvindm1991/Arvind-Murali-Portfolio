@@ -341,16 +341,8 @@ export const StoneStacker = () => {
           </div>
         )}
       </AnimatePresence>
-      
-      {isBottomFull && (
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="absolute bottom-4 left-1/2 -translate-x-1/2 text-stone-400 font-serif italic text-sm"
-        >
-          The path is complete.
-        </motion.div>
-      )}
+
+
     </div>
   );
 };

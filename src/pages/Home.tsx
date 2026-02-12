@@ -10,7 +10,7 @@ export const Home = () => {
       <Background />
       <StoneStacker />
       <div className="flex flex-col justify-center min-h-[40vh] max-w-2xl relative z-10">
-        <div className="mb-10">
+        <div className="mb-10 flex justify-center md:justify-start">
           <img 
             src="/assets/profile/profile.png" 
             alt="Arvind Murali" 
