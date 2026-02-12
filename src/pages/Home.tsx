@@ -25,9 +25,9 @@ export const Home = () => {
           Building <span className="italic text-stone-600">elegant </span>solutions to <span className="italic text-stone-600">complex </span> problems.
         </h1>
         
-        <div className="text-lg text-stone-600 mb-12 leading-loose max-w-3xl">
+        <div className="text-lg text-stone-600 mb-12 leading-loose max-w-3xl text-center mx-auto">
           Accomplished Product Leader and award-winning EdTech entrepreneur
-          <div className="flex flex-wrap justify-center md:justify-start items-center gap-x-3 mt-2">
+          <div className="flex flex-wrap justify-center items-center gap-x-3 mt-2">
             <span>AI native with full stack product building experience</span>
             <span className="text-stone-400">•</span>
             <span>Thrive 0 &rarr; 1</span>
