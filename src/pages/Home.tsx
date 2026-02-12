@@ -2,12 +2,14 @@ import { PageTransition } from '../components/PageTransition';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Background } from '../components/Background';
+import { StoneStacker } from '../components/StoneStacker';
 
 export const Home = () => {
   return (
     <PageTransition>
       <Background />
-      <div className="flex flex-col justify-center min-h-[40vh] max-w-l relative z-10">
+      <StoneStacker />
+      <div className="flex flex-col justify-center min-h-[40vh] max-w-2xl relative z-10">
         <div className="mb-10">
           <img 
             src="/assets/profile/profile.png" 
