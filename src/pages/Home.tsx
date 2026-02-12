@@ -8,7 +8,7 @@ export const Home = () => {
   return (
     <PageTransition>
       <Background />
-      <div className="hidden md:block">
+      <div>
         <StoneStacker />
       </div>
       <div className="flex flex-col items-center md:items-start justify-center min-h-[40vh] max-w-3xl mx-auto relative z-10 text-center md:text-left">
