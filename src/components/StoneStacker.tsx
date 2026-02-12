@@ -8,14 +8,13 @@ interface Stone {
   color: string;
   borderRadius: string;
   stumbleFromX?: number;
+  dropFromY?: number;
 }
 
 const COLORS = [
+  '#d6d3d1', // stone-300
   '#a8a29e', // stone-400
   '#78716c', // stone-500
-  '#57534e', // stone-600
-  '#d6d3d1', // stone-300
-  '#e7e5e4', // stone-200
 ];
 
 interface Stack {
@@ -23,17 +22,34 @@ interface Stack {
   stones: Stone[];
 }
 
-const generateStone = (): Stone => {
+const generateStone = (isFoundation = false): Stone => {
+  if (isFoundation) {
+    const w = 85 + Math.random() * 15;
+    const h = 22 + Math.random() * 8;
+    const r1 = 40 + Math.random() * 30;
+    const r2 = 40 + Math.random() * 30;
+    const r3 = 40 + Math.random() * 30;
+    const r4 = 40 + Math.random() * 30;
+
+    return {
+      id: Math.random().toString(36).substr(2, 9),
+      width: w,
+      height: h,
+      color: '#57534e', // stone-600 (darker)
+      borderRadius: `${r1}% ${100-r1}% ${r2}% ${100-r2}% / ${r3}% ${r4}% ${100-r4}% ${100-r3}%`,
+    };
+  }
+
   const isFlat = Math.random() > 0.6;
-  // Smaller and flatter ranges
+  // Smaller and flatter ranges but not too flat
   const w = isFlat ? (40 + Math.random() * 40) : (35 + Math.random() * 25);
-  const h = isFlat ? (10 + Math.random() * 8) : (20 + Math.random() * 15);
+  const h = isFlat ? (16 + Math.random() * 6) : (20 + Math.random() * 15);
   
-  // Generate organic blob shape
-  const r1 = 40 + Math.random() * 60;
-  const r2 = 40 + Math.random() * 60;
-  const r3 = 40 + Math.random() * 60;
-  const r4 = 40 + Math.random() * 60;
+  // Generate organic blob shape - not too sharp
+  const r1 = 40 + Math.random() * 30;
+  const r2 = 40 + Math.random() * 30;
+  const r3 = 40 + Math.random() * 30;
+  const r4 = 40 + Math.random() * 30;
   
   return {
     id: Math.random().toString(36).substr(2, 9),
@@ -46,7 +62,7 @@ const generateStone = (): Stone => {
 
 export const StoneStacker = () => {
   const [stacks, setStacks] = useState<Stack[]>([]);
-  const [activeStone, setActiveStone] = useState<Stone | null>(generateStone());
+  const [activeStone, setActiveStone] = useState<Stone | null>(generateStone(true));
   const [dragKey, setDragKey] = useState(0);
   const [draggedFromStack, setDraggedFromStack] = useState<{stackIdx: number, stone: Stone} | null>(null);
 
@@ -97,7 +113,11 @@ export const StoneStacker = () => {
           
           if (targetStack.stones.length < 6) {
             // Success! Add to target
-            targetStack.stones = [...targetStack.stones, { ...currentStone, stumbleFromX: 0 }];
+            const stackHeight = targetStack.stones.reduce((acc, s) => acc + (s.height * 0.7), 0);
+            const relReleaseY = window.innerHeight - info.point.y;
+            const dropFromY = -(relReleaseY - stackHeight);
+
+            targetStack.stones = [...targetStack.stones, { ...currentStone, stumbleFromX: 0, dropFromY }];
             newStacks[targetStackIndex] = targetStack;
             
             // Remove from source if it was from a stack
@@ -106,7 +126,7 @@ export const StoneStacker = () => {
               sourceStack.stones = sourceStack.stones.slice(0, -1);
               newStacks[draggedFromStack.stackIdx] = sourceStack;
             } else {
-              setActiveStone(isBottomFull ? null : generateStone());
+              setActiveStone(isBottomFull ? null : generateStone(false));
             }
           } else {
             // Target full, check immediate neighbors (+/- 80px)
@@ -136,7 +156,7 @@ export const StoneStacker = () => {
                 sourceStack.stones = sourceStack.stones.slice(0, -1);
                 newStacks[draggedFromStack.stackIdx] = sourceStack;
               } else {
-                setActiveStone(isBottomFull ? null : generateStone());
+                setActiveStone(isBottomFull ? null : generateStone(false));
               }
             } else if (!foundAnyNeighbor) {
               // NO neighbor exists -> Start a new stack nearby
@@ -149,7 +169,7 @@ export const StoneStacker = () => {
                 sourceStack.stones = sourceStack.stones.slice(0, -1);
                 newStacks[draggedFromStack.stackIdx] = sourceStack;
               } else {
-                setActiveStone(isBottomFull ? null : generateStone());
+                setActiveStone(isBottomFull ? null : generateStone(false));
               }
             } else {
               // Found neighbors but they were all full -> Snap back
@@ -159,14 +179,17 @@ export const StoneStacker = () => {
           }
         } else {
           // No stack nearby, start new one at drop location
-          newStacks.push({ x: dropX, stones: [{ ...currentStone, stumbleFromX: 0 }] });
+          const relReleaseY = window.innerHeight - info.point.y;
+          const dropFromY = -relReleaseY; // Target is ground (0)
+
+          newStacks.push({ x: dropX, stones: [{ ...currentStone, stumbleFromX: 0, dropFromY }] });
           
           if (draggedFromStack) {
             const sourceStack = { ...newStacks[draggedFromStack.stackIdx] };
             sourceStack.stones = sourceStack.stones.slice(0, -1);
             newStacks[draggedFromStack.stackIdx] = sourceStack;
           } else {
-            setActiveStone(isBottomFull ? null : generateStone());
+            setActiveStone(isBottomFull ? null : generateStone(false));
           }
         }
       }
@@ -197,18 +220,26 @@ export const StoneStacker = () => {
                 dragMomentum={false}
                 onDragStart={() => isTop && setDraggedFromStack({ stackIdx: sIdx, stone })}
                 onDragEnd={handleDragEnd}
-                initial={stone.stumbleFromX ? { 
+                initial={stone.dropFromY !== undefined ? { 
+                  y: stone.dropFromY,
+                } : stone.stumbleFromX ? { 
                   x: stone.stumbleFromX, 
                   y: -150, 
                   rotate: stone.stumbleFromX > 0 ? -90 : 90 
-                } : { scale: 0, y: 20 }}
+                } : { y: -window.innerHeight }}
                 whileDrag={{ scale: 1.1, zIndex: 200 }}
                 animate={{ 
                   x: 0, 
                   y: 0, 
                   scale: 1,
                   rotate: 0,
-                  transition: stone.stumbleFromX ? {
+                  transition: stone.dropFromY !== undefined ? {
+                    type: "spring",
+                    stiffness: 60,
+                    damping: 15,
+                    mass: 1.2,
+                    bounce: 0.2
+                  } : stone.stumbleFromX ? {
                     type: "spring",
                     stiffness: 40,
                     damping: 12,
@@ -226,7 +257,7 @@ export const StoneStacker = () => {
                   cursor: isTop ? 'grab' : 'default',
                   pointerEvents: isTop ? 'auto' : 'none',
                 }}
-                className={`shadow-md border border-stone-800/10 ${isTop ? 'pointer-events-auto' : ''}`}
+                className={`shadow-[0_10px_25px_-5px_rgba(0,0,0,0.3)] border border-stone-800/20 ${isTop ? 'pointer-events-auto' : ''}`}
               />
             );
           })}
@@ -250,7 +281,7 @@ export const StoneStacker = () => {
                 borderRadius: activeStone.borderRadius,
                 cursor: 'grab',
               }}
-              className="shadow-md border border-stone-800/20"
+              className="shadow-[0_10px_25px_-5px_rgba(0,0,0,0.3)] border border-stone-800/20"
               initial={{ opacity: 0, scale: 0.5, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.5 }}
