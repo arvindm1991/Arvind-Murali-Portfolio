@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, FileText, Briefcase, Menu, X, Car, ChevronDown, ChevronRight } from 'lucide-react';
+import { Home, FileText, Briefcase, Menu, X, Car, ChevronDown, ChevronRight, Linkedin, Mail } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import clsx from 'clsx';
@@ -117,6 +117,27 @@ export const Sidebar = () => {
             <NavItem key={item.path} item={item} />
           ))}
         </nav>
+        <div className="p-4 border-t border-stone-200 bg-stone-50/50">
+          <p className="px-4 text-xs font-medium text-stone-400 uppercase tracking-wider mb-2">Connect</p>
+          <div className="space-y-1">
+            <a
+              href="https://www.linkedin.com/in/arvindm1991/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 px-4 py-2 text-sm text-stone-500 hover:text-stone-900 hover:bg-stone-100 rounded-lg transition-colors"
+            >
+              <Linkedin size={18} strokeWidth={1.5} />
+              LinkedIn
+            </a>
+            <a
+              href="mailto:arvindm1991@gmail.com"
+              className="flex items-center gap-3 px-4 py-2 text-sm text-stone-500 hover:text-stone-900 hover:bg-stone-100 rounded-lg transition-colors"
+            >
+              <Mail size={18} strokeWidth={1.5} />
+              Contact
+            </a>
+          </div>
+        </div>
       </aside>
 
       {/* Mobile Sidebar Overlay */}
@@ -135,17 +156,39 @@ export const Sidebar = () => {
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed inset-y-0 left-0 w-64 bg-stone-50 z-50 md:hidden shadow-xl border-r border-stone-200 overflow-y-auto"
+              className="fixed inset-y-0 left-0 w-64 bg-stone-50 z-50 md:hidden shadow-xl border-r border-stone-200 overflow-y-auto flex flex-col"
             >
               <div className="p-8 pt-16">
                  <h1 className="text-2xl font-serif text-stone-900">Arvind Murali</h1>
                  <p className="text-sm text-stone-500 mt-1">Product Builder</p>
               </div>
-              <nav className="px-4 space-y-1 pb-8">
+              <nav className="px-4 space-y-1 pb-8 flex-1">
                 {navItems.map((item) => (
                   <NavItem key={item.path} item={item} mobile={true} />
                 ))}
               </nav>
+
+              <div className="p-4 border-t border-stone-200 bg-stone-50/50">
+                <p className="px-4 text-xs font-medium text-stone-400 uppercase tracking-wider mb-2">Connect</p>
+                <div className="space-y-1">
+                  <a
+                    href="https://www.linkedin.com/in/arvindmurali/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 px-4 py-2 text-sm text-stone-500 hover:text-stone-900 hover:bg-stone-100 rounded-lg transition-colors"
+                  >
+                    <Linkedin size={18} strokeWidth={1.5} />
+                    LinkedIn
+                  </a>
+                  <a
+                    href="mailto:arvindm1991@gmail.com"
+                    className="flex items-center gap-3 px-4 py-2 text-sm text-stone-500 hover:text-stone-900 hover:bg-stone-100 rounded-lg transition-colors"
+                  >
+                    <Mail size={18} strokeWidth={1.5} />
+                    Contact
+                  </a>
+                </div>
+              </div>
             </motion.aside>
           </>
         )}

@@ -319,6 +319,7 @@ export const StoneStacker = () => {
                   zIndex: Math.round(stone.y),
                   cursor: isDraggable ? 'grab' : 'default',
                   pointerEvents: 'auto',
+                  touchAction: 'none',
                 }}
                 className="shadow-[0_1px_2px_rgba(0,0,0,0.3),0_4px_8px_rgba(0,0,0,0.1)] border border-stone-700/15"
               />
@@ -343,6 +344,7 @@ export const StoneStacker = () => {
                 backgroundColor: activeStone.color,
                 borderRadius: activeStone.borderRadius,
                 cursor: 'grab',
+                touchAction: 'none',
               }}
               className="shadow-[0_1px_2px_rgba(0,0,0,0.3),0_4px_8px_rgba(0,0,0,0.1)] border border-stone-700/15"
               initial={{ opacity: 0, scale: 0.8 }}
