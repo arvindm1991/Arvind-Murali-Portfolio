@@ -320,37 +320,35 @@ export const StoneStacker = () => {
       ))}
 
       {/* Staging Stones */}
-      <AnimatePresence>
-        {!draggedFromStack && stagingStones.map((stone, index) => (
-          <div 
-            key={`${stone.id}-${dragKey}`}
-            className="absolute bottom-0 right-8 pointer-events-auto"
-            style={{ 
-              zIndex: 200 - index,
-              // Stagger stones horizontally so both are visible
-              transform: `translateX(${-index * 20}px)` 
-            }}
-          >
-            <motion.div
-              drag
-              dragMomentum={false}
-              onDragEnd={handleDragEnd}
-              whileDrag={{ scale: 1.1, zIndex: 300 }}
-              style={{
-                width: stone.width,
-                height: stone.height,
-                backgroundColor: stone.color,
-                borderRadius: stone.borderRadius,
-                cursor: 'grab',
-              }}
-              className="shadow-[0_1px_2px_rgba(0,0,0,0.3),0_4px_8px_rgba(0,0,0,0.1)] border border-stone-700/15"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0 }}
-            />
-          </div>
-        ))}
-      </AnimatePresence>
+      <div className="absolute bottom-0 right-8 pointer-events-auto flex items-end gap-6 h-32">
+        <AnimatePresence>
+          {!draggedFromStack && stagingStones.map((stone, index) => (
+            <div 
+              key={`${stone.id}-${dragKey}`}
+              className="relative"
+              style={{ zIndex: 200 - index }}
+            >
+              <motion.div
+                drag
+                dragMomentum={false}
+                onDragEnd={handleDragEnd}
+                whileDrag={{ scale: 1.1, zIndex: 300 }}
+                style={{
+                  width: stone.width,
+                  height: stone.height,
+                  backgroundColor: stone.color,
+                  borderRadius: stone.borderRadius,
+                  cursor: 'grab',
+                }}
+                className="shadow-[0_1px_2px_rgba(0,0,0,0.3),0_4px_8px_rgba(0,0,0,0.1)] border border-stone-700/15"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0 }}
+              />
+            </div>
+          ))}
+        </AnimatePresence>
+      </div>
 
 
     </div>
