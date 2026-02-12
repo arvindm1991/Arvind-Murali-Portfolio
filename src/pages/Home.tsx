@@ -22,7 +22,7 @@ export const Home = () => {
         </div>
 
         <h1 className="!leading-[1.2] text-5xl md:text-5xl lg:text-5xl font-serif text-stone-900 mb-8">
-          Building <span className="italic text-stone-600">elegant solutions</span> to complex problems.
+          Building <span className="italic text-stone-600">elegant </span>solutions to <span className="italic text-stone-600">complex </span> problems.
         </h1>
         
         <div className="text-lg text-stone-600 mb-12 leading-loose max-w-2xl">

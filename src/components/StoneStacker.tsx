@@ -7,14 +7,21 @@ interface Stone {
   height: number;
   color: string;
   borderRadius: string;
-  stumbleFromX?: number;
-  dropFromY?: number;
+  relX: number; // Horizontal offset from stack center
+  y: number; // Vertical position (bottom of stone)
+  rotate: number; // Rotation angle for tilting
 }
 
 const COLORS = [
-  '#d6d3d1', // stone-300
-  '#a8a29e', // stone-400
-  '#78716c', // stone-500
+  '#e7e5e4', // lightest
+  '#d4cfc9', // warm light
+  '#c2bdb6', // sandy
+  '#b8b0a8', // warm mid
+  '#a8a29e', // neutral mid
+  '#948d87', // cool mid
+  '#78716c', // dark
+  '#6d6560', // warm dark
+  '#5c5651', // darkest
 ];
 
 interface Stack {
@@ -37,6 +44,9 @@ const generateStone = (isFoundation = false): Stone => {
       height: h,
       color: '#57534e', // stone-600 (darker)
       borderRadius: `${r1}% ${100-r1}% ${r2}% ${100-r2}% / ${r3}% ${r4}% ${100-r4}% ${100-r3}%`,
+      relX: 0,
+      y: 0,
+      rotate: 0,
     };
   }
 
@@ -57,6 +67,9 @@ const generateStone = (isFoundation = false): Stone => {
     height: h,
     color: COLORS[Math.floor(Math.random() * COLORS.length)],
     borderRadius: `${r1}% ${100-r1}% ${r2}% ${100-r2}% / ${r3}% ${r4}% ${100-r4}% ${100-r3}%`,
+    relX: 0,
+    y: 0,
+    rotate: 0,
   };
 };
 
@@ -79,8 +92,13 @@ export const StoneStacker = () => {
     const STAGING_HEIGHT = 100;
     const isInStagingZone = dropX > window.innerWidth - STAGING_WIDTH && dropY > window.innerHeight - STAGING_HEIGHT;
 
-    // The stone we are currently dealing with
     const currentStone = draggedFromStack ? draggedFromStack.stone : activeStone;
+
+    if (!currentStone) {
+      setDragKey(prev => prev + 1);
+      setDraggedFromStack(null);
+      return;
+    }
 
     const resetDrag = () => {
       setDragKey(prev => prev + 1);
@@ -107,94 +125,128 @@ export const StoneStacker = () => {
         }
       }
 
-      if (currentStone) {
-        if (targetStackIndex !== -1) {
-          const targetStack = { ...newStacks[targetStackIndex] };
-          
-          if (targetStack.stones.length < 6) {
-            // Success! Add to target
-            const stackHeight = targetStack.stones.reduce((acc, s) => acc + (s.height * 0.7), 0);
-            const relReleaseY = window.innerHeight - info.point.y;
-            const dropFromY = -(relReleaseY - stackHeight);
+      // Elliptical height: given a stone treated as an ellipse,
+      // returns the visual top-y at a specific x-position on that stone.
+      const ellipseTopAt = (s: Stone, xPos: number): number => {
+        const halfW = s.width / 2;
+        const centerX = s.relX;
+        const dx = xPos - centerX;
+        // Outside the stone's width → no support
+        if (Math.abs(dx) >= halfW) return s.y;
+        // Ellipse formula: y = h * sqrt(1 - (dx/a)^2)
+        const fraction = dx / halfW;
+        const ellipseH = s.height * 0.95 * Math.sqrt(1 - fraction * fraction);
+        return s.y + ellipseH;
+      };
 
-            targetStack.stones = [...targetStack.stones, { ...currentStone, stumbleFromX: 0, dropFromY }];
-            newStacks[targetStackIndex] = targetStack;
-            
-            // Remove from source if it was from a stack
-            if (draggedFromStack) {
-              const sourceStack = { ...newStacks[draggedFromStack.stackIdx] };
-              sourceStack.stones = sourceStack.stones.slice(0, -1);
-              newStacks[draggedFromStack.stackIdx] = sourceStack;
-            } else {
-              setActiveStone(isBottomFull ? null : generateStone(false));
-            }
-          } else {
-            // Target full, check immediate neighbors (+/- 80px)
-            let foundAnyNeighbor = false;
-            let availableNeighborIdx = -1;
-            for (let i = 0; i < newStacks.length; i++) {
-              if (i === targetStackIndex) continue;
-              const distToTarget = Math.abs(newStacks[targetStackIndex].x - newStacks[i].x);
-              if (distToTarget <= 80) {
-                foundAnyNeighbor = true;
-                if (newStacks[i].stones.length < 6) {
-                  availableNeighborIdx = i;
-                  break;
-                }
-              }
-            }
+      const calculateSettledState = (stack: Stack, stone: Stone, relX: number) => {
+        const stoneHalfW = stone.width / 2;
 
-            if (availableNeighborIdx !== -1) {
-              // Stumble to non-full neighbor
-              const neighbor = { ...newStacks[availableNeighborIdx] };
-              const offsetX = neighbor.x - newStacks[targetStackIndex].x;
-              neighbor.stones = [...neighbor.stones, { ...currentStone, stumbleFromX: -offsetX }];
-              newStacks[availableNeighborIdx] = neighbor;
-              
-              if (draggedFromStack) {
-                const sourceStack = { ...newStacks[draggedFromStack.stackIdx] };
-                sourceStack.stones = sourceStack.stones.slice(0, -1);
-                newStacks[draggedFromStack.stackIdx] = sourceStack;
-              } else {
-                setActiveStone(isBottomFull ? null : generateStone(false));
-              }
-            } else if (!foundAnyNeighbor) {
-              // NO neighbor exists -> Start a new stack nearby
-              const offset = (Math.random() > 0.5 ? 60 : -60);
-              const newX = newStacks[targetStackIndex].x + offset;
-              newStacks.push({ x: newX, stones: [{ ...currentStone, stumbleFromX: -offset }] });
-              
-              if (draggedFromStack) {
-                const sourceStack = { ...newStacks[draggedFromStack.stackIdx] };
-                sourceStack.stones = sourceStack.stones.slice(0, -1);
-                newStacks[draggedFromStack.stackIdx] = sourceStack;
-              } else {
-                setActiveStone(isBottomFull ? null : generateStone(false));
-              }
-            } else {
-              // Found neighbors but they were all full -> Snap back
-              resetDrag();
-              return prev;
+        // For each existing stone, find the height at the CENTER of the new stone.
+        // This is the "preferred" settling point.
+        let centerY = 0;
+        let bestEdgeY = 0;
+        let centerSupported = false;
+
+        stack.stones.forEach(s => {
+          if (s.id === stone.id) return;
+          const sHalfW = s.width / 2;
+          const sLeft = s.relX - sHalfW;
+          const sRight = s.relX + sHalfW;
+
+          // Check if center of new stone is within this stone's width
+          if (relX >= sLeft && relX <= sRight) {
+            const topAtCenter = ellipseTopAt(s, relX);
+            if (topAtCenter > centerY) {
+              centerY = topAtCenter;
+              centerSupported = true;
             }
           }
-        } else {
-          // No stack nearby, start new one at drop location
-          const relReleaseY = window.innerHeight - info.point.y;
-          const dropFromY = -relReleaseY; // Target is ground (0)
 
-          newStacks.push({ x: dropX, stones: [{ ...currentStone, stumbleFromX: 0, dropFromY }] });
-          
-          if (draggedFromStack) {
-            const sourceStack = { ...newStacks[draggedFromStack.stackIdx] };
-            sourceStack.stones = sourceStack.stones.slice(0, -1);
-            newStacks[draggedFromStack.stackIdx] = sourceStack;
-          } else {
-            setActiveStone(isBottomFull ? null : generateStone(false));
-          }
+          // Also check edges as fallback
+          const leftPx = relX - stoneHalfW * 0.5;
+          const rightPx = relX + stoneHalfW * 0.5;
+          [leftPx, rightPx].forEach(px => {
+            if (px >= sLeft && px <= sRight) {
+              const topAtEdge = ellipseTopAt(s, px);
+              if (topAtEdge > bestEdgeY) bestEdgeY = topAtEdge;
+            }
+          });
+        });
+
+        // Prefer center support; only use edge if center has no support
+        const y = centerSupported ? centerY : bestEdgeY;
+
+        // Tilting: only tilt if settled on edge, not center
+        let rotate = 0;
+        if (!centerSupported && bestEdgeY > 0) {
+          // Figure out which edge is supporting
+          const leftPx = relX - stoneHalfW * 0.5;
+          const rightPx = relX + stoneHalfW * 0.5;
+          let leftH = 0, rightH = 0;
+          stack.stones.forEach(s => {
+            if (s.id === stone.id) return;
+            const sHalfW = s.width / 2;
+            const sLeft = s.relX - sHalfW;
+            const sRight = s.relX + sHalfW;
+            if (leftPx >= sLeft && leftPx <= sRight) {
+              const h = ellipseTopAt(s, leftPx);
+              if (h > leftH) leftH = h;
+            }
+            if (rightPx >= sLeft && rightPx <= sRight) {
+              const h = ellipseTopAt(s, rightPx);
+              if (h > rightH) rightH = h;
+            }
+          });
+          const diff = rightH - leftH;
+          rotate = Math.max(-12, Math.min(12, diff * 0.8));
         }
+
+        return { y, rotate };
+      };
+
+      const placeStoneInStack = (stackIdx: number, stone: Stone, x: number) => {
+        const stack = { ...newStacks[stackIdx] };
+        const relX = x - stack.x;
+        const { y, rotate } = calculateSettledState(stack, stone, relX);
+        const MAX_HEIGHT = window.innerHeight * 0.35;
+
+        if (y + stone.height > MAX_HEIGHT) {
+          // Overflow to next stack
+          const nextStackIdx = stackIdx + 1;
+          if (nextStackIdx < newStacks.length) {
+            placeStoneInStack(nextStackIdx, stone, newStacks[nextStackIdx].x);
+          } else {
+            // Create new stack for overflow
+            const newX = stack.x + 100;
+            newStacks.push({ x: newX, stones: [] });
+            placeStoneInStack(newStacks.length - 1, stone, newX);
+          }
+          return;
+        }
+
+        stack.stones = [...stack.stones, { ...stone, relX, y, rotate }];
+        newStacks[stackIdx] = stack;
+      };
+
+      if (targetStackIndex !== -1) {
+        placeStoneInStack(targetStackIndex, currentStone, dropX);
+      } else {
+        // No stack nearby, start new one
+        newStacks.push({ x: dropX, stones: [{ ...currentStone, relX: 0, y: 0 }] });
       }
 
-      // Cleanup empty stacks
+      // Final cleanup: Remove from source and generate new stone
+      if (draggedFromStack) {
+        newStacks = newStacks.map((s, i) => 
+          i === draggedFromStack.stackIdx 
+            ? { ...s, stones: s.stones.filter(st => st.id !== currentStone.id) }
+            : s
+        );
+      } else {
+        setActiveStone(isBottomFull ? null : generateStone(false));
+      }
+
       return newStacks.filter(s => s.stones.length > 0);
     });
 
@@ -208,56 +260,56 @@ export const StoneStacker = () => {
       {stacks.map((stack, sIdx) => (
         <div 
           key={sIdx} 
-          className="absolute bottom-0 flex flex-col-reverse items-center"
+          className="absolute bottom-0"
           style={{ left: stack.x, transform: 'translateX(-50%)' }}
         >
-          {stack.stones.map((stone, stIdx) => {
-            const isTop = stIdx === stack.stones.length - 1;
+          {stack.stones.map((stone) => {
+            // A stone is draggable if no other stone is resting on it
+            const isCovered = stack.stones.some(other => {
+              if (other.id === stone.id) return false;
+              if (other.y <= stone.y) return false;
+              const sLeft = stone.relX - stone.width / 2;
+              const sRight = stone.relX + stone.width / 2;
+              const oLeft = other.relX - other.width / 2;
+              const oRight = other.relX + other.width / 2;
+              return sLeft < oRight && sRight > oLeft;
+            });
+            const isDraggable = !isCovered;
+
             return (
               <motion.div
                 key={stone.id}
-                drag={isTop}
+                drag={isDraggable}
                 dragMomentum={false}
-                onDragStart={() => isTop && setDraggedFromStack({ stackIdx: sIdx, stone })}
+                onDragStart={() => isDraggable && setDraggedFromStack({ stackIdx: sIdx, stone })}
                 onDragEnd={handleDragEnd}
-                initial={stone.dropFromY !== undefined ? { 
-                  y: stone.dropFromY,
-                } : stone.stumbleFromX ? { 
-                  x: stone.stumbleFromX, 
-                  y: -150, 
-                  rotate: stone.stumbleFromX > 0 ? -90 : 90 
-                } : { y: -window.innerHeight }}
-                whileDrag={{ scale: 1.1, zIndex: 200 }}
+                // No layoutId — prevents center-flash on new stone spawn
+                initial={false}
+                whileDrag={{ scale: 1.1, zIndex: 1000 }}
                 animate={{ 
-                  x: 0, 
-                  y: 0, 
+                  x: stone.relX - stone.width / 2, // Center stone on relX
+                  y: -stone.y, 
                   scale: 1,
-                  rotate: 0,
-                  transition: stone.dropFromY !== undefined ? {
+                  rotate: stone.rotate,
+                  transition: {
                     type: "spring",
-                    stiffness: 60,
-                    damping: 15,
-                    mass: 1.2,
-                    bounce: 0.2
-                  } : stone.stumbleFromX ? {
-                    type: "spring",
-                    stiffness: 40,
-                    damping: 12,
-                    mass: 1.5,
-                    bounce: 0.3
-                  } : { duration: 0.3 }
+                    stiffness: 180, // Snappier drop
+                    damping: 22
+                  }
                 }}
                 style={{
+                  position: 'absolute',
+                  left: 0,
+                  bottom: 0,
                   width: stone.width,
                   height: stone.height,
                   backgroundColor: stone.color,
                   borderRadius: stone.borderRadius,
-                  marginBottom: -stone.height * 0.3,
-                  zIndex: stIdx,
-                  cursor: isTop ? 'grab' : 'default',
-                  pointerEvents: isTop ? 'auto' : 'none',
+                  zIndex: Math.round(stone.y),
+                  cursor: isDraggable ? 'grab' : 'default',
+                  pointerEvents: 'auto',
                 }}
-                className={`shadow-[0_10px_25px_-5px_rgba(0,0,0,0.3)] border border-stone-800/20 ${isTop ? 'pointer-events-auto' : ''}`}
+                className="shadow-[0_1px_2px_rgba(0,0,0,0.3),0_4px_8px_rgba(0,0,0,0.1)] border border-stone-700/15"
               />
             );
           })}
@@ -281,10 +333,10 @@ export const StoneStacker = () => {
                 borderRadius: activeStone.borderRadius,
                 cursor: 'grab',
               }}
-              className="shadow-[0_10px_25px_-5px_rgba(0,0,0,0.3)] border border-stone-800/20"
-              initial={{ opacity: 0, scale: 0.5, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.5 }}
+              className="shadow-[0_1px_2px_rgba(0,0,0,0.3),0_4px_8px_rgba(0,0,0,0.1)] border border-stone-700/15"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
             />
           </div>
         )}
