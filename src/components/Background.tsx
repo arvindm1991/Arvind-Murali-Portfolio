@@ -32,20 +32,20 @@ export const Background = () => {
       // Slightly darker stone color
       ctx.fillStyle = '#a8a29e'; // stone-400
 
-      const thresholdX = canvas.width * 0.75;
-      const thresholdY = canvas.height * 0.75;
+      const thresholdX = canvas.width * 0.60;
+      const thresholdY = canvas.height * 0.60;
 
       for (let i = 0; i < cols; i++) {
         for (let j = 0; j < rows; j++) {
           const x = i * gap;
           const y = j * gap;
 
-          // Only draw in the bottom-right 25% area
+          // Only draw in the bottom-right 40% area
           if (x < thresholdX || y < thresholdY) continue;
 
           // Smoother fade-in from the threshold
-          const ratioX = (x - thresholdX) / (canvas.width * 0.25);
-          const ratioY = (y - thresholdY) / (canvas.height * 0.25);
+          const ratioX = (x - thresholdX) / (canvas.width * 0.40);
+          const ratioY = (y - thresholdY) / (canvas.height * 0.40);
           
           // Higher base opacity so they are actually visible
           ctx.globalAlpha = 0.5 * Math.sqrt(ratioX * ratioY); 
