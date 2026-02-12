@@ -8,7 +8,9 @@ export const Home = () => {
   return (
     <PageTransition>
       <Background />
-      <StoneStacker />
+      <div className="hidden md:block">
+        <StoneStacker />
+      </div>
       <div className="flex flex-col items-center md:items-start justify-center min-h-[40vh] max-w-3xl mx-auto relative z-10 text-center md:text-left">
         <div className="mb-10 w-full flex justify-center md:justify-start">
           <img 
@@ -21,18 +23,18 @@ export const Home = () => {
           />
         </div>
 
-        <h1 className="!leading-[1.2] text-5xl md:text-5xl lg:text-5xl font-serif text-stone-900 mb-8">
+        <h1 className="!leading-[1.2] text-4xl  md:text-5xl font-serif text-stone-900 mb-8">
           Building <span className="italic text-stone-600">elegant </span>solutions to <span className="italic text-stone-600">complex </span> problems.
         </h1>
         
-        <div className="text-lg text-stone-600 mb-12 leading-loose max-w-3xl mx-auto">
+        <div className="text-md sm:text-lg  text-stone-600 mb-12 md:leading-loose max-w-3xl mx-auto">
           Accomplished Product Leader and award-winning EdTech entrepreneur
-          <div className="flex flex-wrap  items-center gap-x-3 mt-2">
+          <div className="flex flex-col md:flex-row md:flex-wrap items-center gap-y-2 md:gap-x-3 mt-4">
             <span>AI native with full stack product building experience</span>
-            <span className="text-stone-400">•</span>
+            <span className="hidden md:inline text-stone-400">•</span>
             <span>Thrive 0 &rarr; 1</span>
-            <span className="text-stone-400">•</span>
-            <span>Strong passion for education & building pedagogically sound solutions</span>
+            <span className="hidden md:inline text-stone-400">•</span>
+            <span>Strong passion for education & product excellence</span>
           </div>
         </div>
 
