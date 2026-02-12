@@ -9,8 +9,8 @@ export const Home = () => {
     <PageTransition>
       <Background />
       <StoneStacker />
-      <div className="flex flex-col items-center justify-center min-h-[40vh] max-w-4xl mx-auto relative z-10 text-center">
-        <div className="mb-10">
+      <div className="flex flex-col items-center md:items-start justify-center min-h-[40vh] max-w-4xl mx-auto relative z-10 text-center md:text-left">
+        <div className="mb-10 w-full flex justify-center md:justify-start">
           <img 
             src={`${import.meta.env.BASE_URL}assets/profile/profile.png`}
             alt="Arvind Murali" 
@@ -27,8 +27,7 @@ export const Home = () => {
         
         <div className="text-lg text-stone-600 mb-12 leading-loose max-w-3xl">
           Accomplished Product Leader and award-winning EdTech entrepreneur
-          <div className="flex flex-wrap justify-center items-center gap-x-3 mt-2">
-            <span className="text-stone-400 md:inline hidden">•</span>
+          <div className="flex flex-wrap justify-center md:justify-start items-center gap-x-3 mt-2">
             <span>AI native with full stack product building experience</span>
             <span className="text-stone-400">•</span>
             <span>Thrive 0 &rarr; 1</span>
@@ -37,7 +36,7 @@ export const Home = () => {
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-6 justify-center">
+        <div className="flex flex-col sm:flex-row gap-6 justify-center md:justify-start">
           <Link to="/projects" className="group flex items-center gap-2 text-stone-900 font-medium border-b border-stone-300 pb-1 hover:border-stone-900 transition-all w-fit">
             View Projects 
             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
