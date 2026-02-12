@@ -321,7 +321,7 @@ export const StoneStacker = () => {
                   pointerEvents: 'auto',
                   touchAction: 'none',
                 }}
-                className="shadow-[0_1px_2px_rgba(0,0,0,0.3),0_4px_8px_rgba(0,0,0,0.1)] border border-stone-700/15"
+                className="shadow-[0_1px_2px_rgba(0,0,0,0.3),0_4px_8px_rgba(0,0,0,0.1)] border border-stone-800/50"
               />
             );
           })}
@@ -346,7 +346,7 @@ export const StoneStacker = () => {
                 cursor: 'grab',
                 touchAction: 'none',
               }}
-              className="shadow-[0_1px_2px_rgba(0,0,0,0.3),0_4px_8px_rgba(0,0,0,0.1)] border border-stone-700/15"
+              className="shadow-[0_1px_2px_rgba(0,0,0,0.3),0_4px_8px_rgba(0,0,0,0.1)] border border-stone-800/50"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0 }}
