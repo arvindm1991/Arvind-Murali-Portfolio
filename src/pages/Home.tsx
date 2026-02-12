@@ -12,11 +12,11 @@ export const Home = () => {
         <StoneStacker />
       </div>
       <div className="flex flex-col items-center md:items-start justify-center min-h-[40vh] max-w-3xl mx-auto relative z-10 text-center md:text-left">
-        <div className="mb-10 w-full flex justify-center md:justify-start">
+        <div className="m-5 w-full flex justify-center md:justify-start">
           <img 
             src={`${import.meta.env.BASE_URL}assets/profile/profile.png`}
             alt="Arvind Murali" 
-            className="w-48 h-48 md:w-64 md:h-64 object-cover"
+            className="w-36 h-36 md:w-64 md:h-64 object-cover"
             style={{
               borderRadius: "40% 30% 60% 40% / 40% 40% 60% 50%"
             }}
