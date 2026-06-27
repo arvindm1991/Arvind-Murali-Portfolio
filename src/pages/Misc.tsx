@@ -7,7 +7,7 @@ export const Misc = () => {
         <header className="mb-12">
           <h1 className="text-3xl font-serif mb-4">Automotive & Engineering</h1>
           <p className="text-stone-600 text-lg">
-            Before my journey in EdTech, I spent several years in the automotive sector, focusing on data analytics and automated testing.
+            Before my founder and product leadership work, I spent several years in the automotive sector, focusing on data analytics and automated testing.
           </p>
         </header>
 

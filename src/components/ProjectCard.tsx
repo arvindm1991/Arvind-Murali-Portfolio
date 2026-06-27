@@ -42,6 +42,28 @@ export const ProjectCard = ({ project, index }: ProjectCardProps) => {
         <p className="text-stone-600 mb-6 flex-1 leading-relaxed">
           {project.description}
         </p>
+
+        {project.coverUrl && (
+          <div className="mb-6 aspect-[16/9] overflow-hidden rounded-md border border-stone-200 bg-stone-50">
+            {project.coverUrl.endsWith('.mp4') ? (
+              <video
+                src={project.coverUrl}
+                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                autoPlay
+                muted
+                loop
+                playsInline
+              />
+            ) : (
+              <img
+                src={project.coverUrl}
+                alt={`${project.title} preview`}
+                className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-[1.02]"
+                loading="lazy"
+              />
+            )}
+          </div>
+        )}
         
         {project.tech && (
           <div className="flex flex-wrap gap-2 mt-auto">

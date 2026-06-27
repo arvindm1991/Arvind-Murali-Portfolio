@@ -28,13 +28,13 @@ export const Home = () => {
         </h1>
         
         <div className="text-md sm:text-lg  text-stone-600 mb-12 md:leading-loose max-w-3xl mx-auto">
-          Accomplished Product Leader and award-winning EdTech entrepreneur
+          Product leader, founder, and AI-native entrepreneur
           <div className="flex flex-col md:flex-row md:flex-wrap items-center gap-y-2 md:gap-x-3 mt-4">
-            <span>AI native with full stack product building experience</span>
+            <span>Full-stack product building experience</span>
             <span className="hidden md:inline text-stone-400">•</span>
-            <span>Thrive 0 &rarr; 1</span>
+            <span>0 to 1 operator</span>
             <span className="hidden md:inline text-stone-400">•</span>
-            <span>Strong passion for education & product excellence</span>
+            <span>Product nuance across AI, learning, and workflow systems</span>
           </div>
         </div>
 

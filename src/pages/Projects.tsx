@@ -9,7 +9,7 @@ export const Projects = () => {
         <header className="mb-12">
           <h1 className="text-3xl font-serif mb-4">Featured Work</h1>
           <p className="text-stone-600 text-lg max-w-2xl">
-             A collection of products and platforms I've built, focusing on education, AI, and user experience.
+             Products and platforms I've built across AI, hiring, learning, workflow, and product experience.
           </p>
         </header>
 

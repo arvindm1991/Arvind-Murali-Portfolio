@@ -74,6 +74,12 @@ const generateStone = (isFoundation = false): Stone => {
   };
 };
 
+const stoneSurface = (color: string) => ({
+  background: `linear-gradient(145deg, rgba(255,255,255,0.12), transparent 48%, rgba(0,0,0,0.05)), ${color}`,
+  boxShadow:
+    'inset 1px 1px 2px rgba(255,255,255,0.18), inset -1px -2px 3px rgba(0,0,0,0.08), 0 2px 4px rgba(87,83,78,0.10)',
+});
+
 export const StoneStacker = () => {
   const [stacks, setStacks] = useState<Stack[]>([]);
   const [activeStone, setActiveStone] = useState<Stone | null>(generateStone(true));
@@ -294,9 +300,9 @@ export const StoneStacker = () => {
                 dragMomentum={false}
                 onDragStart={() => isDraggable && setDraggedFromStack({ stackId: stack.id, stone })}
                 onDragEnd={handleDragEnd}
-                // No layoutId — prevents center-flash on new stone spawn
+                // No layoutId - prevents center-flash on new stone spawn
                 initial={false}
-                whileDrag={{ scale: 1.1, zIndex: 1000 }}
+                whileDrag={{ scale: 1.1, zIndex: 1000, cursor: 'grabbing' }}
                 animate={{ 
                   x: stone.relX - stone.width / 2, // Center stone on relX
                   y: -stone.y, 
@@ -314,14 +320,14 @@ export const StoneStacker = () => {
                   bottom: 0,
                   width: stone.width,
                   height: stone.height,
-                  backgroundColor: stone.color,
+                  ...stoneSurface(stone.color),
                   borderRadius: stone.borderRadius,
                   zIndex: Math.round(stone.y),
                   cursor: isDraggable ? 'grab' : 'default',
                   pointerEvents: 'auto',
                   touchAction: 'none',
                 }}
-                className="shadow-[0_1px_2px_rgba(0,0,0,0.3),0_4px_8px_rgba(0,0,0,0.1)] border border-stone-800/50"
+                className="select-none active:cursor-grabbing"
               />
             );
           })}
@@ -337,16 +343,16 @@ export const StoneStacker = () => {
               key={activeStone.id}
               dragMomentum={false}
               onDragEnd={handleDragEnd}
-              whileDrag={{ scale: 1.1, zIndex: 300 }}
+              whileDrag={{ scale: 1.1, zIndex: 300, cursor: 'grabbing' }}
               style={{
                 width: activeStone.width,
                 height: activeStone.height,
-                backgroundColor: activeStone.color,
+                ...stoneSurface(activeStone.color),
                 borderRadius: activeStone.borderRadius,
                 cursor: 'grab',
                 touchAction: 'none',
               }}
-              className="shadow-[0_1px_2px_rgba(0,0,0,0.3),0_4px_8px_rgba(0,0,0,0.1)] border border-stone-800/50"
+              className="select-none active:cursor-grabbing"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0 }}

@@ -109,7 +109,7 @@ export const Sidebar = () => {
       <aside className="hidden md:flex flex-col w-64 h-screen bg-stone-100/50 border-r border-stone-200 sticky top-0 backdrop-blur-sm overflow-y-auto">
         <div className="p-8">
           <h1 className="text-2xl font-serif text-stone-900 tracking-tight">Arvind Murali</h1>
-          <p className="text-sm text-stone-500 mt-1">Product Builder</p>
+          <p className="text-sm text-stone-500 mt-1">Product Founder</p>
         </div>
 
         <nav className="flex-1 px-4 space-y-1 pb-8">
@@ -160,7 +160,7 @@ export const Sidebar = () => {
             >
               <div className="p-8 pt-16">
                  <h1 className="text-2xl font-serif text-stone-900">Arvind Murali</h1>
-                 <p className="text-sm text-stone-500 mt-1">Product Builder</p>
+                 <p className="text-sm text-stone-500 mt-1">Product Founder</p>
               </div>
               <nav className="px-4 space-y-1 pb-8 flex-1">
                 {navItems.map((item) => (

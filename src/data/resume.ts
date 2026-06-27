@@ -38,8 +38,14 @@ export const resumeData: ResumeData = {
     email: "arvindm1991@gmail.com",
     phone: "+1 (404) 916-3487"
   },
-  summary: "Accomplished Product Leader and award-winning EdTech entrepreneur with 7+ years in software and technology. Specialized in building AI-powered learning platforms with a unique 0-1 experience. Strong passion for education & building pedagogically sound solutions.",
+  summary: "End-to-end product builder, founder, and AI-native entrepreneur with 7+ years in software and technology. Owns the full loop from product strategy, customer discovery, positioning, and selling through implementation, iteration, and hands-on development with coding agents.",
   experience: [
+    {
+      company: "CollabSignal",
+      role: "Co-founder & CEO",
+      period: "PRESENT",
+      description: "Building AI oversight interviews for engineering hiring teams while operating across product, customer discovery, sales, positioning, architecture, and increasingly deep hands-on development with coding agents."
+    },
     {
       company: "Readable English",
       role: "Director of Product & Engineering",
