@@ -116,16 +116,23 @@ export const StoneStacker = () => {
     }
 
     setStacks(prev => {
-      let newStacks = [...prev];
+      let newStacks = prev
+        .map((stack) =>
+          draggedFromStack && stack.id === draggedFromStack.stackId
+            ? { ...stack, stones: stack.stones.filter((st) => st.id !== currentStone.id) }
+            : stack
+        )
+        .filter((stack) => stack.stones.length > 0);
       let targetStackIndex = -1;
-      const PROXIMITY = 60;
+      const PROXIMITY = Math.max(60, currentStone.width * 1.2);
+      let closestStackDistance = Infinity;
 
       // Find if dropped near an existing stack
       for (let i = 0; i < newStacks.length; i++) {
         const dist = Math.abs(dropX - newStacks[i].x);
-        if (dist < PROXIMITY) {
+        if (dist < PROXIMITY && dist < closestStackDistance) {
           targetStackIndex = i;
-          break;
+          closestStackDistance = dist;
         }
       }
 
@@ -143,76 +150,166 @@ export const StoneStacker = () => {
         return s.y + ellipseH;
       };
 
-      const calculateSettledState = (stack: Stack, stone: Stone, relX: number) => {
+      const calculateSettledState = (stack: Stack, stone: Stone, initialRelX: number) => {
         const stoneHalfW = stone.width / 2;
+        const sampleOffsets = [-0.82, -0.45, 0, 0.45, 0.82].map((factor) => factor * stoneHalfW);
 
-        // For each existing stone, find the height at the CENTER of the new stone.
-        // This is the "preferred" settling point.
-        let centerY = 0;
-        let bestEdgeY = 0;
-        let centerSupported = false;
+        const contactAt = (xPos: number) => {
+          let height = 0;
 
-        stack.stones.forEach(s => {
-          if (s.id === stone.id) return;
-          const sHalfW = s.width / 2;
-          const sLeft = s.relX - sHalfW;
-          const sRight = s.relX + sHalfW;
-
-          // Check if center of new stone is within this stone's width
-          if (relX >= sLeft && relX <= sRight) {
-            const topAtCenter = ellipseTopAt(s, relX);
-            if (topAtCenter > centerY) {
-              centerY = topAtCenter;
-              centerSupported = true;
-            }
-          }
-
-          // Also check edges as fallback
-          const leftPx = relX - stoneHalfW * 0.5;
-          const rightPx = relX + stoneHalfW * 0.5;
-          [leftPx, rightPx].forEach(px => {
-            if (px >= sLeft && px <= sRight) {
-              const topAtEdge = ellipseTopAt(s, px);
-              if (topAtEdge > bestEdgeY) bestEdgeY = topAtEdge;
-            }
-          });
-        });
-
-        // Prefer center support; only use edge if center has no support
-        const y = centerSupported ? centerY : bestEdgeY;
-
-        // Tilting: only tilt if settled on edge, not center
-        let rotate = 0;
-        if (!centerSupported && bestEdgeY > 0) {
-          // Figure out which edge is supporting
-          const leftPx = relX - stoneHalfW * 0.5;
-          const rightPx = relX + stoneHalfW * 0.5;
-          let leftH = 0, rightH = 0;
-          stack.stones.forEach(s => {
+          stack.stones.forEach((s) => {
             if (s.id === stone.id) return;
+
             const sHalfW = s.width / 2;
             const sLeft = s.relX - sHalfW;
             const sRight = s.relX + sHalfW;
-            if (leftPx >= sLeft && leftPx <= sRight) {
-              const h = ellipseTopAt(s, leftPx);
-              if (h > leftH) leftH = h;
-            }
-            if (rightPx >= sLeft && rightPx <= sRight) {
-              const h = ellipseTopAt(s, rightPx);
-              if (h > rightH) rightH = h;
+
+            if (xPos >= sLeft && xPos <= sRight) {
+              height = Math.max(height, ellipseTopAt(s, xPos));
             }
           });
-          const diff = rightH - leftH;
-          rotate = Math.max(-12, Math.min(12, diff * 0.8));
+
+          return height;
+        };
+
+        const evaluate = (relX: number) => {
+          const contacts = sampleOffsets
+            .map((offset) => ({
+              offset,
+              height: contactAt(relX + offset),
+            }))
+            .filter((contact) => contact.height > 0);
+
+          if (contacts.length === 0) {
+            return { stable: true, relX, y: 0, rotate: 0, rollDirection: 0 };
+          }
+
+          const leftContacts = contacts.filter((contact) => contact.offset < -stoneHalfW * 0.12);
+          const rightContacts = contacts.filter((contact) => contact.offset > stoneHalfW * 0.12);
+          const centerContacts = contacts.filter((contact) => Math.abs(contact.offset) <= stoneHalfW * 0.12);
+          const left = leftContacts.reduce<typeof contacts[number] | null>(
+            (best, contact) => (!best || contact.height > best.height ? contact : best),
+            null
+          );
+          const right = rightContacts.reduce<typeof contacts[number] | null>(
+            (best, contact) => (!best || contact.height > best.height ? contact : best),
+            null
+          );
+          const center = centerContacts.reduce<typeof contacts[number] | null>(
+            (best, contact) => (!best || contact.height > best.height ? contact : best),
+            null
+          );
+
+          if (left && right) {
+            const slope = (right.height - left.height) / Math.max(1, right.offset - left.offset);
+            return {
+              stable: true,
+              support: 'two-sided',
+              relX,
+              y: Math.max(left.height, right.height),
+              rotate: Math.max(-14, Math.min(14, slope * 50)),
+              rollDirection: 0,
+            };
+          }
+
+          if (center) {
+            return {
+              stable: true,
+              support: 'center',
+              relX,
+              y: center.height,
+              rotate: 0,
+              rollDirection: 0,
+            };
+          }
+
+          const onlyContact = contacts.reduce((best, contact) =>
+            contact.height > best.height ? contact : best
+          );
+          const rollDirection = onlyContact.offset < 0 ? 1 : -1;
+
+          return {
+            stable: false,
+            support: 'one-sided',
+            relX,
+            y: onlyContact.height,
+            rotate: rollDirection * 9,
+            rollDirection,
+          };
+        };
+
+        let relX = initialRelX;
+        let state = evaluate(relX);
+        const releaseHeight = state.y;
+        const step = Math.max(2, stone.width * 0.07);
+        const maxRoll = stone.width * 1.25;
+
+        for (let i = 0; i < 36 && !state.stable; i++) {
+          const nextRelX = relX + state.rollDirection * step;
+
+          if (Math.abs(nextRelX - initialRelX) > maxRoll) {
+            break;
+          }
+
+          const nextState = evaluate(nextRelX);
+
+          // If it rolled off the supporting edge, let it settle on the ground nearby.
+          if (nextState.y === 0) {
+            state = { ...nextState, stable: true, rotate: 0 };
+            break;
+          }
+
+          if (nextState.stable && nextState.y <= releaseHeight + 2) {
+            relX = nextRelX;
+            state = nextState;
+            break;
+          }
+
+          if (!nextState.stable && nextState.y <= state.y + 2) {
+            relX = nextRelX;
+            state = nextState;
+          } else {
+            break;
+          }
         }
 
-        return { y, rotate };
+        if (!state.stable) {
+          const leftProbe = evaluate(state.relX - step);
+          const rightProbe = evaluate(state.relX + step);
+          const lowerProbe =
+            leftProbe.y <= rightProbe.y ? { ...leftProbe, relX: state.relX - step } : { ...rightProbe, relX: state.relX + step };
+
+          if (lowerProbe.y < state.y) {
+            state = lowerProbe.stable ? lowerProbe : { ...lowerProbe, stable: true, rotate: 0 };
+          } else {
+            state = { stable: true, support: 'ground', relX: state.relX + state.rollDirection * step, y: 0, rotate: 0, rollDirection: 0 };
+          }
+        }
+
+        return { relX: state.relX, y: state.y, rotate: state.rotate };
       };
 
       const placeStoneInStack = (targetStackIdOrIdx: string | number, stone: Stone, x: number) => {
         const stack = { ...newStacks.find(s => s.id === (typeof targetStackIdOrIdx === 'string' ? targetStackIdOrIdx : newStacks[targetStackIdOrIdx].id))! };
         const relX = x - stack.x;
-        const { y, rotate } = calculateSettledState(stack, stone, relX);
+        const supportReach = stone.width * 1.4 + 64;
+        const supportStack = {
+          ...stack,
+          stones: newStacks.flatMap((nearbyStack) => {
+            const stackOffset = nearbyStack.x - stack.x;
+            const closeToDrop = Math.abs(x - nearbyStack.x) <= supportReach;
+            const closeToStack = Math.abs(stackOffset) <= supportReach + stone.width;
+
+            if (!closeToDrop && !closeToStack) return [];
+
+            return nearbyStack.stones.map((nearbyStone) => ({
+              ...nearbyStone,
+              relX: nearbyStone.relX + stackOffset,
+            }));
+          }),
+        };
+        const settled = calculateSettledState(supportStack, stone, relX);
+        const { y, rotate } = settled;
         const MAX_HEIGHT = window.innerHeight * 0.35;
 
         if (y + stone.height > MAX_HEIGHT) {
@@ -236,7 +333,7 @@ export const StoneStacker = () => {
           return;
         }
 
-        stack.stones = [...stack.stones, { ...stone, relX, y, rotate }];
+        stack.stones = [...stack.stones, { ...stone, relX: settled.relX, y, rotate }];
         const currentStackIdx = typeof targetStackIdOrIdx === 'number'
           ? targetStackIdOrIdx
           : newStacks.findIndex(s => s.id === targetStackIdOrIdx);
@@ -254,14 +351,7 @@ export const StoneStacker = () => {
         });
       }
 
-      // Final cleanup: Remove from source and generate new stone
-      if (draggedFromStack) {
-        newStacks = newStacks.map((s) => 
-          s.id === draggedFromStack.stackId 
-            ? { ...s, stones: s.stones.filter(st => st.id !== currentStone.id) }
-            : s
-        );
-      } else {
+      if (!draggedFromStack) {
         setActiveStone(isBottomFull ? null : generateStone(false));
       }
 
