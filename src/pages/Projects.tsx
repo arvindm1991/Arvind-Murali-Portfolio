@@ -18,6 +18,12 @@ export const Projects = () => {
             <ProjectCard key={project.id} project={project} index={index} />
           ))}
         </div>
+
+        <footer className="mt-12 pt-6 border-t border-stone-200">
+          <p className="text-xs text-stone-400 italic">
+            * Not affiliated with Scratch. Just a big fan!
+          </p>
+        </footer>
       </div>
     </PageTransition>
   );

@@ -28,6 +28,25 @@ const ProjectMedia = ({ src, title }: { src: string; title: string }) => (
   </figure>
 );
 
+const renderWithScratchLink = (text: string) => {
+  if (!text.includes('Scratch*')) return text;
+  const parts = text.split('Scratch*');
+  return (
+    <>
+      {parts[0]}
+      <a
+        href="https://scratch.mit.edu/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="font-medium text-stone-900 underline underline-offset-4 decoration-stone-300 hover:decoration-stone-900 transition-colors"
+      >
+        Scratch*
+      </a>
+      {parts[1]}
+    </>
+  );
+};
+
 export const ProjectDetail = () => {
   const { id } = useParams<{ id: string }>();
   const project = projectsData.find((p) => p.id === id);
@@ -84,7 +103,7 @@ export const ProjectDetail = () => {
           {project.longDescription && (
             <div>
               <p className="text-xl leading-relaxed text-stone-700">
-                {project.longDescription}
+                {renderWithScratchLink(project.longDescription)}
               </p>
             </div>
           )}
@@ -157,6 +176,14 @@ export const ProjectDetail = () => {
                   </article>
                 ))}
               </div>
+            </div>
+          )}
+
+          {project.footnote && (
+            <div className="pt-8 border-t border-stone-200">
+              <p className="text-xs text-stone-400 italic">
+                {project.footnote}
+              </p>
             </div>
           )}
 

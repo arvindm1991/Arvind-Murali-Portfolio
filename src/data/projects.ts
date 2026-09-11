@@ -13,6 +13,7 @@ export interface Project {
   logoUrl?: string;
   coverUrl?: string;
   productNuancesSubtitle?: string;
+  footnote?: string;
   productNuances?: {
     title: string;
     description: string;
@@ -32,7 +33,7 @@ export const projectsData: Project[] = [
     tech: ["EdTech", "AI Primitives", "Block Coding", "Creative Studio"],
     logoUrl: "/assets/logos/claypot.svg",
     coverUrl: "/assets/covers/claypot.png",
-    longDescription: "Scratch helped build intuition for deterministic programming with loops, variables, and conditionals. Claypot does the same for non-deterministic AI systems. It introduces brand new AI primitives designed to help curious young creators build their ideas with AI, test its capabilities and limits, and stay firmly in charge.",
+    longDescription: "Scratch* helped build intuition for deterministic programming with loops, variables, and conditionals. Claypot does the same for non-deterministic AI systems. It introduces brand new AI primitives designed to help curious young creators build their ideas with AI, test its capabilities and limits, and stay firmly in charge.",
     problem: "AI is too powerful to ignore and too fallible to trust blindly. Keeping children away from AI will not prepare them, but handing them a passive chatbot treats them merely as consumers without building foundational mental models of how probabilistic systems work.",
     solution: "Claypot reimagines block-based programming with AI primitives. Learners connect readable blocks for instructions, characters, data, and rules. With 'Observer', young creators inspect what went in, what ran, what came out, and test every run—building intuitive understanding of non-deterministic models.",
     productNuancesSubtitle: "What makes Claypot unique is moving beyond black-box chatbots into inspectable, interactive computing with AI primitives designed for intuition and agency.",
@@ -55,7 +56,8 @@ export const projectsData: Project[] = [
         imageUrl: "/assets/covers/claypot-1.png",
         imageAlt: "Claypot studio panel showing connected blocks and run inspector"
       }
-    ]
+    ],
+    footnote: "* Not affiliated with Scratch. Just a big fan!"
   },
   {
     id: "readable-english",

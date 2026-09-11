@@ -40,7 +40,28 @@ export const ProjectCard = ({ project, index }: ProjectCardProps) => {
         )}
         
         <p className="text-stone-600 mb-6 flex-1 leading-relaxed">
-          {project.description}
+          {project.description.includes('Scratch*') ? (
+            <>
+              {project.description.split('Scratch*')[0]}
+              <span
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+              >
+                <a
+                  href="https://scratch.mit.edu/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium text-stone-900 underline underline-offset-4 decoration-stone-300 hover:decoration-stone-900 transition-colors"
+                >
+                  Scratch*
+                </a>
+              </span>
+              {project.description.split('Scratch*')[1]}
+            </>
+          ) : (
+            project.description
+          )}
         </p>
 
         {project.coverUrl && (
