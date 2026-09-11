@@ -130,11 +130,6 @@ export const resumeData: ResumeData = {
   ],
   workHistory: [
     {
-      company: "Claypot",
-      role: "Founder",
-      period: "PRESENT"
-    },
-    {
       company: "Readable English",
       role: "Director of Product & Engineering",
       period: "AUG 2024 - PRESENT"
