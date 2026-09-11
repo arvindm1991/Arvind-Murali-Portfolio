@@ -132,7 +132,7 @@ export const ProjectDetail = () => {
               <div className="max-w-2xl">
                 <h2 className="text-2xl font-serif text-stone-900 mb-3">Product nuance</h2>
                 <p className="text-stone-600 leading-relaxed">
-                  The CollabSignal work I want to showcase is the product design beneath the surface: how each mechanic turns an AI-assisted interview into evidence of judgment.
+                  {project.productNuancesSubtitle || "The product design beneath the surface: how each mechanic turns interaction into tangible insight and learning."}
                 </p>
               </div>
 

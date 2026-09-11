@@ -12,6 +12,7 @@ export interface Project {
   solution?: string;
   logoUrl?: string;
   coverUrl?: string;
+  productNuancesSubtitle?: string;
   productNuances?: {
     title: string;
     description: string;
@@ -22,48 +23,37 @@ export interface Project {
 
 export const projectsData: Project[] = [
   {
-    id: "collabsignal",
-    title: "CollabSignal",
-    role: "Co-founder & CEO",
-    description: "AI oversight interviews that reveal how engineers clarify, steer, verify, and own AI-generated code.",
-    url: "https://collabsignal.ai/",
+    id: "claypot",
+    title: "Claypot",
+    role: "Founder",
+    description: "Creative coding studio for AI. Like Scratch built intuition for deterministic coding, Claypot does the same for non-deterministic AI systems.",
+    url: "https://claypot.app",
     featured: true,
-    tech: ["AI Hiring", "Product Strategy", "Agentic IDE", "Evaluation Design"],
-    logoUrl: "/assets/collabsignal/favicon.svg",
-    coverUrl: "/assets/collabsignal/bug-injection-setup.png",
-    longDescription: "CollabSignal is built around a specific product thesis: in an AI-native interview, the most useful signal is not code output alone. It is whether a candidate asks the right product questions, supervises AI output, catches realistic mistakes, and owns the final implementation.",
-    problem: "AI-assisted coding makes final submissions look deceptively similar. Hiring teams need to see judgment, verification discipline, and product sense while candidates work.",
-    solution: "We designed interview mechanics that reveal the process: a PM agent with hidden constraints, controlled bug injection, live oversight, and reports that translate behavior into hiring evidence.",
+    tech: ["EdTech", "AI Primitives", "Block Coding", "Creative Studio"],
+    logoUrl: "/assets/logos/claypot.svg",
+    coverUrl: "/assets/covers/claypot.png",
+    longDescription: "Scratch helped build intuition for deterministic programming with loops, variables, and conditionals. Claypot does the same for non-deterministic AI systems. It introduces brand new AI primitives designed to help curious young creators build their ideas with AI, test its capabilities and limits, and stay firmly in charge.",
+    problem: "AI is too powerful to ignore and too fallible to trust blindly. Keeping children away from AI will not prepare them, but handing them a passive chatbot treats them merely as consumers without building foundational mental models of how probabilistic systems work.",
+    solution: "Claypot reimagines block-based programming with AI primitives. Learners connect readable blocks for instructions, characters, data, and rules. With 'Observer', young creators inspect what went in, what ran, what came out, and test every run—building intuitive understanding of non-deterministic models.",
+    productNuancesSubtitle: "What makes Claypot unique is moving beyond black-box chatbots into inspectable, interactive computing with AI primitives designed for intuition and agency.",
     features: [
-      "Bug injection tests review discipline",
-      "PM agent reveals clarification habits",
-      "Live monitor exposes workflow choices",
-      "Reports connect evidence to hiring decisions"
+      "AI Primitives as Building Blocks: Connect readable blocks for instructions, characters, information, and rules",
+      "Observer & Visible Traces: Inspect what went in, what ran, what came out, and how much compute (Clay) was used",
+      "Comparable Runs: Rerun prompts and logic to test hunches, compare variance, and catch confident mistakes",
+      "Ideas First, AI Second: Young creators stay in charge of the story, rules, and choices rather than passively chatting"
     ],
     productNuances: [
       {
-        title: "Bug injection as a judgment test",
-        description: "The feature adds realistic AI mistakes with difficulty, category, cutoff, and spacing controls. That lets teams test review discipline without turning the interview into a trick.",
-        imageUrl: "/assets/collabsignal/bug-injection-setup.png",
-        imageAlt: "CollabSignal bug injection setup with difficulty, cutoff, turn gap, and bug categories"
+        title: "Brand new AI primitives",
+        description: "Instead of hiding AI behind generic text prompts, Claypot treats AI as a fundamental creative building block. Learners snap together readable blocks for prompt instructions, context, rules, and personas alongside deterministic logic.",
+        imageUrl: "/assets/covers/claypot.png",
+        imageAlt: "Claypot creative coding studio showing block-based AI project and primitives"
       },
       {
-        title: "PM agent for ambiguity",
-        description: "The PM agent answers only when candidates ask. Hidden constraints make product discovery measurable across scope, policy, workflows, edge cases, and launch tradeoffs.",
-        imageUrl: "/assets/collabsignal/pm-agent-setup.png",
-        imageAlt: "CollabSignal PM agent setup showing hidden constraints that are revealed only when asked"
-      },
-      {
-        title: "Live oversight without interrupting",
-        description: "Interviewers can see prompts, edits, tests, and terminal behavior while the work unfolds, separating deliberate supervision from passive delegation.",
-        imageUrl: "/assets/collabsignal/live-monitor.png",
-        imageAlt: "CollabSignal live monitor showing candidate activity during an AI-assisted coding round"
-      },
-      {
-        title: "Report layer that explains the signal",
-        description: "The report shows injected defects, caught and missed bugs, expected fixes, and review analysis so the decision is grounded in process evidence.",
-        imageUrl: "/assets/collabsignal/report-full-analysis-live.png",
-        imageAlt: "CollabSignal full analysis report showing candidate summary, CSQ score, radar chart, and dimension scores"
+        title: "Observer: making non-determinism inspectable",
+        description: "Observer reveals what the project sent, the exact sequence of execution steps, and the generated outcome. By comparing multiple runs, learners discover that AI can be astonishing yet make confident mistakes, cultivating genuine critical judgment.",
+        imageUrl: "/assets/covers/claypot-1.png",
+        imageAlt: "Claypot studio panel showing connected blocks and run inspector"
       }
     ]
   },
@@ -125,6 +115,53 @@ export const projectsData: Project[] = [
       "Multimodal Note Taking",
       "AI Co-Pilot",
       "YouTube Learning elevation"
+    ]
+  },
+  {
+    id: "collabsignal",
+    title: "CollabSignal",
+    role: "Co-founder & CEO",
+    description: "AI oversight interviews that reveal how engineers clarify, steer, verify, and own AI-generated code.",
+    url: "https://collabsignal.ai/",
+    featured: true,
+    tech: ["AI Hiring", "Product Strategy", "Agentic IDE", "Evaluation Design"],
+    logoUrl: "/assets/collabsignal/favicon.svg",
+    coverUrl: "/assets/collabsignal/bug-injection-setup.png",
+    longDescription: "CollabSignal is built around a specific product thesis: in an AI-native interview, the most useful signal is not code output alone. It is whether a candidate asks the right product questions, supervises AI output, catches realistic mistakes, and owns the final implementation.",
+    problem: "AI-assisted coding makes final submissions look deceptively similar. Hiring teams need to see judgment, verification discipline, and product sense while candidates work.",
+    solution: "We designed interview mechanics that reveal the process: a PM agent with hidden constraints, controlled bug injection, live oversight, and reports that translate behavior into hiring evidence.",
+    productNuancesSubtitle: "The CollabSignal work I want to showcase is the product design beneath the surface: how each mechanic turns an AI-assisted interview into evidence of judgment.",
+    features: [
+      "Bug injection tests review discipline",
+      "PM agent reveals clarification habits",
+      "Live monitor exposes workflow choices",
+      "Reports connect evidence to hiring decisions"
+    ],
+    productNuances: [
+      {
+        title: "Bug injection as a judgment test",
+        description: "The feature adds realistic AI mistakes with difficulty, category, cutoff, and spacing controls. That lets teams test review discipline without turning the interview into a trick.",
+        imageUrl: "/assets/collabsignal/bug-injection-setup.png",
+        imageAlt: "CollabSignal bug injection setup with difficulty, cutoff, turn gap, and bug categories"
+      },
+      {
+        title: "PM agent for ambiguity",
+        description: "The PM agent answers only when candidates ask. Hidden constraints make product discovery measurable across scope, policy, workflows, edge cases, and launch tradeoffs.",
+        imageUrl: "/assets/collabsignal/pm-agent-setup.png",
+        imageAlt: "CollabSignal PM agent setup showing hidden constraints that are revealed only when asked"
+      },
+      {
+        title: "Live oversight without interrupting",
+        description: "Interviewers can see prompts, edits, tests, and terminal behavior while the work unfolds, separating deliberate supervision from passive delegation.",
+        imageUrl: "/assets/collabsignal/live-monitor.png",
+        imageAlt: "CollabSignal live monitor showing candidate activity during an AI-assisted coding round"
+      },
+      {
+        title: "Report layer that explains the signal",
+        description: "The report shows injected defects, caught and missed bugs, expected fixes, and review analysis so the decision is grounded in process evidence.",
+        imageUrl: "/assets/collabsignal/report-full-analysis-live.png",
+        imageAlt: "CollabSignal full analysis report showing candidate summary, CSQ score, radar chart, and dimension scores"
+      }
     ]
   },
   {
